@@ -1,4 +1,5 @@
 name: Build Python EXE
+
 on:
   push:
     branches: [ main ]
@@ -18,11 +19,16 @@ jobs:
       - name: Install PyInstaller
         run: pip install pyinstaller
 
-      - name: Build EXE
-        run: pyinstaller -F main.py
+      - name: Build main.exe
+        run: pyinstaller -F --windowed main.py
 
-      - name: Upload artifact
+      - name: Build rainbow.exe
+        run: pyinstaller -F --windowed rainbow.py
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: compiled-exe
-          path: dist/main.exe
+          name: compiled-exes
+          path: |
+            dist/main.exe
+            dist/rainbow.exe
