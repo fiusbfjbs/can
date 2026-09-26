@@ -1,42 +1,38 @@
-name: Build Canvas EXE
+name: Build Tkinter EXE
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build-windows:
     runs-on: windows-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
-      - name: Install dependencies（清华镜像加速）
+      - name: Install PyInstaller
         run: |
           python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
-          pip install kivy pyinstaller --prefer-binary -i https://pypi.tuna.tsinghua.edu.cn/simple
+          pip install pyinstaller -i https://pypi.tuna.tsinghua.edu.cn/simple
 
       - name: Build EXE
-        run: pyinstaller --onefile --name canvas --collect-data kivy --collect-binaries kivy --hidden-import kivy --hidden-import kivy.app --hidden-import kivy.uix.widget --hidden-import kivy.core.window --hidden-import kivy.graphics main.py
+        run: pyinstaller --onefile --windowed --name CatGoose main.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: canvas-exe
-          path: dist/canvas.exe
+          name: tkinter-exe
+          path: dist/*.exe
 
-      - name: Create Release
+      - name: Release
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.run_number }}
-          name: Canvas Rainbow v${{ github.run_number }}
-          files: dist/canvas.exe
-          generate_release_notes: true
+          files: dist/*.exe
